@@ -59,7 +59,15 @@ void MyFrame::OnTimer(wxTimerEvent &event)
 {
 	m_timer.Stop();
 	cap.read(img_);
-	ConvertMatBitmapTowxBitmap(img_, wx_btm_img_);
+	Mat img_blur, img_greyscale, img_out, img_canny;
+
+	GaussianBlur(img_, img_blur, Size(3, 3), 3, 3);
+	cvtColor(img_blur, img_greyscale, COLOR_BGR2GRAY);
+	Canny(img_greyscale, img_canny, 150, 50);
+
+	cvtColor(img_canny, img_out, COLOR_GRAY2BGR);
+	ConvertMatBitmapTowxBitmap(img_out, wx_btm_img_);
+	
 	wx_static_bitmap->SetBitmap(wx_btm_img_);
 	m_timer.Start(timer_delay_ms_);
 }
