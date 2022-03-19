@@ -13,7 +13,7 @@ class MyFrame: public wxFrame
 {
 	wxStaticBitmap *wx_static_bitmap;
 
-	VideoCapture cap{ INTERNAL_CAM };
+	VideoCapture cap{ USB_CAM };
 	Mat img_;
 	wxBitmap wx_btm_img_;
 
@@ -61,12 +61,21 @@ void MyFrame::OnTimer(wxTimerEvent &event)
 	cap.read(img_);
 	Mat img_blur, img_greyscale, img_out, img_canny;
 
-	GaussianBlur(img_, img_blur, Size(3, 3), 3, 3);
+	GaussianBlur(img_, img_blur, Size(3, 3), 3, 0);
 	cvtColor(img_blur, img_greyscale, COLOR_BGR2GRAY);
-	Canny(img_greyscale, img_canny, 150, 50);
+	Canny(img_greyscale, img_canny, 50, 150);
 
-	cvtColor(img_canny, img_out, COLOR_GRAY2BGR);
-	ConvertMatBitmapTowxBitmap(img_out, wx_btm_img_);
+	vector<vector<Point>> contours;
+	vector<Vec4i> heirachy;
+	findContours(img_canny, contours, heirachy, CV_RETR_TREE,
+			CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+
+	for (int i = 0; i < contours.size(); i++) {
+		drawContours(img_, contours, i, Scalar(0, 255, 0), 1, 8,
+				heirachy, 0, Point());
+	}
+
+	ConvertMatBitmapTowxBitmap(img_, wx_btm_img_);
 	
 	wx_static_bitmap->SetBitmap(wx_btm_img_);
 	m_timer.Start(timer_delay_ms_);
