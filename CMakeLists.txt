@@ -17,7 +17,7 @@ endif (WIN32)
 include(${wxWidgets_USE_FILE})
 
 
-set(OpenCV_DIR "/usr/lib/opencv")
+#set(OpenCV_DIR "/usr/lib/opencv")
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
